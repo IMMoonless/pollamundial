@@ -1,117 +1,892 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POLLA MUNDIAL 2026</title>
-    <link rel="stylesheet" href="estilos.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Montserrat:wght@400;600&family=Poppins:wght@300;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polla Mundialista — Sorteo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080f0a;
+      --surface: #101e14;
+      --surface2: #182a1e;
+      --gold: #c9a84c;
+      --gold-light: #e8c86a;
+      --gold-dim: rgba(201,168,76,0.18);
+      --text: #f0ece0;
+      --muted: #6e8a74;
+      --white: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grass stripes */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        180deg,
+        rgba(255,255,255,0.018) 0px,
+        rgba(255,255,255,0.018) 44px,
+        transparent 44px,
+        transparent 88px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Vignette */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 2rem 1.2rem 3rem;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .header-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      letter-spacing: 0.04em;
+      color: var(--gold);
+      text-shadow: 0 2px 30px rgba(201,168,76,0.25);
+      line-height: 0.95;
+    }
+
+    .header-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin: 0.8rem 0 0;
+    }
+
+    .header-rule span {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .hr-line {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    /* ── STATUS ── */
+    .status-bar {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--gold-dim);
+      padding: 0.35rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .status-pill strong {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    /* ── LAYOUT ── */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 720px) {
+      .main-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ── WHEEL SECTION ── */
+    .wheel-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+    }
+
+    .wheel-outer {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Decorative ring */
+    .wheel-ring {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,168,76,0.15);
+      pointer-events: none;
+    }
+
+    .wheel-ring-2 {
+      inset: -22px;
+      border: 1px dashed rgba(201,168,76,0.08);
+    }
+
+    /* Pointer */
+    .wheel-pointer {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      filter: drop-shadow(0 2px 10px rgba(201,168,76,0.7));
+    }
+
+    .wheel-pointer svg {
+      display: block;
+    }
+
+    #wheelCanvas {
+      display: block;
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 2px rgba(201,168,76,0.3),
+        0 0 50px rgba(0,0,0,0.7),
+        0 0 100px rgba(201,168,76,0.07);
+      cursor: pointer;
+      max-width: 90vw;
+      height: auto;
+    }
+
+    #wheelCanvas:hover { filter: brightness(1.05); }
+
+    /* Spin button */
+    .spin-btn {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.12em;
+      background: var(--gold);
+      color: #060d08;
+      border: none;
+      padding: 0.75rem 3.5rem;
+      cursor: pointer;
+      transition: all 0.18s;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .spin-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+
+    .spin-btn:hover:not(:disabled)::after { transform: translateX(100%); }
+
+    .spin-btn:hover:not(:disabled) {
+      background: var(--gold-light);
+      transform: scale(1.04);
+      box-shadow: 0 6px 24px rgba(201,168,76,0.35);
+    }
+
+    .spin-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .completed-area {
+      text-align: center;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .completed-area h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      color: var(--gold);
+    }
+
+    .completed-area p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* ── SCOREBOARD ── */
+    .scoreboard {
+      background: var(--surface);
+      border: 1px solid rgba(201,168,76,0.18);
+      border-radius: 3px;
+      overflow: hidden;
+      position: sticky;
+      top: 1rem;
+    }
+
+    .sb-header {
+      background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.06));
+      border-bottom: 1px solid rgba(201,168,76,0.22);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sb-header-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+    }
+
+    .sb-count {
+      margin-left: auto;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .scoreboard-list {
+      list-style: none;
+    }
+
+    .scoreboard-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.52rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.4s;
+    }
+
+    .scoreboard-item:last-child { border-bottom: none; }
+
+    .scoreboard-item.assigned {
+      background: rgba(201,168,76,0.06);
+    }
+
+    .sb-num {
+      font-size: 0.68rem;
+      color: var(--muted);
+      width: 16px;
+      flex-shrink: 0;
+    }
+
+    .sb-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sb-team {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .sb-pending {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      flex-shrink: 0;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-card {
+      background: var(--surface);
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      padding: 2.5rem 3rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      transform: scale(0.82) translateY(24px);
+      transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at top, rgba(201,168,76,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 1.6rem;
+    }
+
+    .modal-arrow {
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .modal-flag {
+      font-size: 3.8rem;
+      display: block;
+      margin: 0.2rem 0;
+      animation: flagPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+    }
+
+    @keyframes flagPop {
+      from { transform: scale(0.4); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .modal-team {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+      transition: color 0.3s;
+    }
+
+    .modal-confetti {
+      font-size: 1rem;
+      opacity: 0.7;
+      margin-bottom: 0.2rem;
+    }
+
+    .modal-btn {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.12em;
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.45);
+      padding: 0.55rem 2.2rem;
+      cursor: pointer;
+      margin-top: 1.4rem;
+      transition: all 0.18s;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    }
+
+    .modal-btn:hover {
+      background: var(--gold);
+      color: #060d08;
+      border-color: var(--gold);
+    }
+
+    /* ── SPIN LABEL ── */
+    .click-hint {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+  </style>
 </head>
 <body>
-    <div class="contenedor">
-        <header>
-            <h1><i class="fas fa-trophy"></i> POLLA MUNDIAL 2026</h1>
-            <p class="subtitulo">⚽ Sorteo Finance ¡Que empiece el show! ⚽</p>
-            <p class="advertencia-sonido" id="advertenciaSonido">🔇 Haz clic en cualquier parte para activar sonidos</p>
-        </header>
 
-        <main>
-            <div class="panel-izquierdo">
-                <div class="equipos-container">
-                    <h2><i class="fas fa-flag"></i> EQUIPOS DISPONIBLES <span class="contador" id="contadorEquipos">10</span></h2>
-                    <div class="lista-equipos" id="listaEquipos">
-                        <!-- Equipos se cargan aquí -->
-                    </div>
-                </div>
-                
-                <div class="personas-container">
-                    <h2><i class="fas fa-users"></i> PARTICIPANTES <span class="contador" id="contadorPersonas">10</span></h2>
-                    <div class="lista-personas" id="listaPersonas">
-                        <!-- Personas se cargan aquí -->
-                    </div>
-                </div>
-            </div>
+<div class="container">
 
-            <div class="panel-derecho">
-                <div class="sorteo-dramatico">
-                    <h2><i class="fas fa-dice"></i> TAM TAM TAM...</h2>
-                    
-                    <div class="contador-suspenso">
-                        <div class="numero" id="contador">3</div>
-                        <div class="texto-contador">SEGUNDOS DE SUSPENSO...</div>
-                    </div>
-                    
-                    <div class="resultado-sorteo">
-                        <div class="tarjeta-persona" id="tarjetaPersona">
-                            <div class="nombre-grande">¿QUIÉN SERÁ?</div>
-                            <div class="emoji">😱</div>
-                        </div>
-                        
-                        <div class="vs">VS</div>
-                        
-                        <div class="tarjeta-equipo" id="tarjetaEquipo">
-                            <div class="equipo-grande">¿QUÉ EQUIPO?</div>
-                            <div class="bandera">🏴‍☠️</div>
-                        </div>
-                    </div>
-                    
-                    <div class="elementos-drama">
-                        <div class="drama-item" id="drama1">
-                            <i class="fas fa-music"></i> Sonido de suspenso...
-                        </div>
-                        <div class="drama-item" id="drama2">
-                            <i class="fas fa-heartbeat"></i> Latidos acelerados...
-                        </div>
-                        <div class="drama-item" id="drama3">
-                            <i class="fas fa-theater-masks"></i> ¡Pum!
-                        </div>
-                    </div>
-                    
-                    <button class="btn-sortear" id="btnSortear">
-                        <i class="fas fa-bolt"></i> ¡INICIAR ESTA MRDA!
-                    </button>
-                    
-                    <button class="btn-reiniciar" id="btnReiniciar">
-                        <i class="fas fa-redo"></i> REINICIAR TODO
-                    </button>
-                    
-                    <div class="controles-sonido">
-                        <button class="btn-sonido" id="btnSilenciar">
-                            <i class="fas fa-volume-up"></i> SONIDO: ACTIVADO
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="resultados-finales">
-                    <h2><i class="fas fa-list-ol"></i> RESULTADOS DEL SORTEO <span class="contador" id="contadorResultados">0</span></h2>
-                    <div class="lista-resultados" id="listaResultados">
-                        <p class="instruccion">Los resultados aparecerán aquí...</p>
-                    </div>
-                </div>
-            </div>
-        </main>
-        
-        <footer>
-            <p>F por el que le toque Noruega ⚽ | ¡La arepa es Colombiana!</p>
-            <div class="efectos-colombia">
-                <span class="efecto">☕</span>
-                <span class="efecto">🌽</span>
-                <span class="efecto">🇨🇴</span>
-                <span class="efecto">⚽</span>
-                <span class="efecto">💃</span>
-                <span class="efecto">🕺</span>
-            </div>
-            <div class="github-info">
-                <i class="fab fa-github"></i> Viva Colombia | 
-                <a href="https://github.com/tuusuario/pollamundialista" target="_blank">Ver código fuente</a>
-            </div>
-        </footer>
+  <!-- Header -->
+  <header>
+    <p class="header-eyebrow">⚽ Mundial 2026</p>
+    <h1>Sorteo<br>Polla</h1>
+    <div class="header-rule">
+      <div class="hr-line"></div>
+      <span>Gira · Descubre · Compite</span>
+      <div class="hr-line"></div>
+    </div>
+  </header>
+
+  <!-- Status -->
+  <div class="status-bar">
+    <div class="status-pill">
+      Participantes restantes: <strong id="counter">10</strong>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main-layout">
+
+    <!-- Wheel -->
+    <div class="wheel-section">
+      <div class="wheel-outer">
+        <div class="wheel-ring"></div>
+        <div class="wheel-ring wheel-ring-2"></div>
+
+        <!-- Pointer -->
+        <div class="wheel-pointer">
+          <svg width="28" height="30" viewBox="0 0 28 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="14,30 0,0 28,0" fill="#c9a84c"/>
+            <polygon points="14,24 4,4 24,4" fill="#e8c86a" opacity="0.4"/>
+          </svg>
+        </div>
+
+        <canvas id="wheelCanvas" width="460" height="460" onclick="spinWheel()"></canvas>
+      </div>
+
+      <p class="click-hint">Haz clic en la ruleta o en el botón</p>
+      <button class="spin-btn" id="spinBtn" onclick="spinWheel()">⚽ &nbsp;GIRAR RULETA</button>
+
+      <div class="completed-area" id="completedArea">
+        <h2>🏆 ¡SORTEO COMPLETADO!</h2>
+        <p>Todos tienen su equipo — ¡Buena suerte!</p>
+      </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Scoreboard -->
+    <div class="scoreboard">
+      <div class="sb-header">
+        <span class="sb-header-title">📋 &nbsp;Tabla del Sorteo</span>
+        <span class="sb-count" id="sbCount">0 / 10</span>
+      </div>
+      <ul class="scoreboard-list" id="scoreboardList"></ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card" id="modalCard">
+    <div class="modal-eyebrow">¡Le tocó!</div>
+    <div class="modal-name" id="modalName">Nombre</div>
+    <div class="modal-arrow">▸ &nbsp;Representa a &nbsp;▸</div>
+    <span class="modal-flag" id="modalFlag">🏳️</span>
+    <div class="modal-team" id="modalTeam">EQUIPO</div>
+    <div class="modal-confetti" id="modalConfetti"></div>
+    <button class="modal-btn" onclick="closeModal()">CONTINUAR &nbsp;→</button>
+  </div>
+</div>
+
+<script>
+  /* ═══════════════════════════
+     DATA
+  ═══════════════════════════ */
+  const PREDEFINED = {
+    'Manolo Roldan Florez':       'PORTUGAL',
+    'Sebastian Delgado Acevedo':  'FRANCIA',
+    'Stiven Perez Arango':        'ARGENTINA',
+    'Daniel Stiven Martinez Cano':'ESPAÑA'
+  };
+
+  const ALL_PARTICIPANTS = [
+    'Sebastian Delgado Acevedo',
+    'Andres Alejandro Acosta Sanchez',
+    'Brayan Lopez Hereira',
+    'Daniel Stiven Martinez Cano',
+    'David Sehuanes Morales',
+    'Manolo Roldan Florez',
+    'Maria Camila Arango Quintero',
+    'Roberto Carlos Morante Delgado',
+    'Stiven Perez Arango',
+    'Ximena Urrea Rivera'
+  ];
+
+  const TEAM_FLAGS = {
+    'ARGENTINA':  '🇦🇷',
+    'BRASIL':     '🇧🇷',
+    'FRANCIA':    '🇫🇷',
+    'PORTUGAL':   '🇵🇹',
+    'INGLATERRA': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    'ESPAÑA':     '🇪🇸',
+    'HOLANDA':    '🇳🇱',
+    'ALEMANIA':   '🇩🇪',
+    'COLOMBIA':   '🇨🇴',
+    'NORUEGA':    '🇳🇴'
+  };
+
+  const TEAM_COLORS = {
+    'ARGENTINA':  '#74acdf',
+    'BRASIL':     '#0a9e40',
+    'FRANCIA':    '#3a5fbf',
+    'PORTUGAL':   '#3a8a3a',
+    'INGLATERRA': '#cf2020',
+    'ESPAÑA':     '#c93030',
+    'HOLANDA':    '#e07020',
+    'ALEMANIA':   '#aaaaaa',
+    'COLOMBIA':   '#d4b800',
+    'NORUEGA':    '#d43030'
+  };
+
+  /* Shuffle random team pool */
+  let randomTeams = ['BRASIL','INGLATERRA','HOLANDA','ALEMANIA','COLOMBIA','NORUEGA'];
+  for (let i = randomTeams.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [randomTeams[i], randomTeams[j]] = [randomTeams[j], randomTeams[i]];
+  }
+
+  /* State */
+  let remaining    = [...ALL_PARTICIPANTS];
+  const assignments = {};
+  let spinning      = false;
+  let currentAngle  = 0;
+  let assignedCount = 0;
+
+  /* ═══════════════════════════
+     CANVAS
+  ═══════════════════════════ */
+  const canvas = document.getElementById('wheelCanvas');
+  const ctx    = canvas.getContext('2d');
+  const CX     = canvas.width  / 2;
+  const CY     = canvas.height / 2;
+  const R      = Math.min(CX, CY) - 12;
+
+  /* Alternating dark-green segment colors */
+  const SEG_COLORS = [
+    '#1a3d24', '#0e2618', '#1f4228', '#132c1c',
+    '#173722', '#0d2416', '#1c3d26', '#102a1a',
+    '#194026', '#0f2e1c'
+  ];
+
+  const SEG_HIGHLIGHT = [
+    '#22502e', '#162f1f', '#265032', '#193620',
+    '#1f4228', '#122c1c', '#234d2e', '#163220',
+    '#205030', '#143820'
+  ];
+
+  function shortName(name) {
+    const p = name.trim().split(' ');
+    return p[0] + (p[1] ? ' ' + p[1][0] + '.' : '');
+  }
+
+  function drawWheel(highlightIdx = -1) {
+    const N = remaining.length;
+    if (N === 0) { drawEmpty(); return; }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const seg = (2 * Math.PI) / N;
+
+    ctx.save();
+    ctx.translate(CX, CY);
+    ctx.rotate(currentAngle);
+
+    for (let i = 0; i < N; i++) {
+      const a0 = -Math.PI / 2 + i * seg;
+      const a1 = a0 + seg;
+      const isHl = i === highlightIdx;
+
+      /* Segment fill */
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, R, a0, a1);
+      ctx.closePath();
+      ctx.fillStyle = isHl ? SEG_HIGHLIGHT[i % SEG_HIGHLIGHT.length] : SEG_COLORS[i % SEG_COLORS.length];
+      ctx.fill();
+
+      /* Gold border */
+      ctx.strokeStyle = 'rgba(201,168,76,0.35)';
+      ctx.lineWidth   = 1.2;
+      ctx.stroke();
+
+      /* Segment label */
+      ctx.save();
+      const mid = a0 + seg / 2;
+      ctx.rotate(mid);
+
+      const fontSize = N <= 5 ? 15 : N <= 8 ? 13 : 11;
+      ctx.font        = `700 ${fontSize}px "Barlow Condensed", sans-serif`;
+      ctx.textAlign   = 'right';
+      ctx.textBaseline= 'middle';
+
+      /* Shadow for readability */
+      ctx.shadowColor  = 'rgba(0,0,0,0.7)';
+      ctx.shadowBlur   = 4;
+      ctx.fillStyle    = isHl ? '#ffdf88' : '#f0ece0';
+      ctx.fillText(shortName(remaining[i]), R - 20, 0);
+      ctx.shadowBlur   = 0;
+      ctx.restore();
+    }
+
+    /* Outer ring */
+    ctx.beginPath();
+    ctx.arc(0, 0, R, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(201,168,76,0.55)';
+    ctx.lineWidth   = 2.5;
+    ctx.stroke();
+
+    /* Center circle */
+    ctx.beginPath();
+    ctx.arc(0, 0, 30, 0, 2 * Math.PI);
+    const cg = ctx.createRadialGradient(0, 0, 0, 0, 0, 30);
+    cg.addColorStop(0, '#1a3d24');
+    cg.addColorStop(1, '#0a1f10');
+    ctx.fillStyle = cg;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(201,168,76,0.6)';
+    ctx.lineWidth   = 1.8;
+    ctx.stroke();
+
+    /* Center icon */
+    ctx.font          = '20px serif';
+    ctx.textAlign     = 'center';
+    ctx.textBaseline  = 'middle';
+    ctx.fillStyle     = '#fff';
+    ctx.fillText('⚽', 0, 0);
+
+    ctx.restore();
+  }
+
+  function drawEmpty() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(CX, CY);
+    ctx.beginPath();
+    ctx.arc(0, 0, R, 0, 2 * Math.PI);
+    ctx.fillStyle = '#101e14';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(201,168,76,0.4)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.font = '3.5rem serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🏆', 0, 0);
+    ctx.restore();
+  }
+
+  /* ═══════════════════════════
+     SPIN ANIMATION
+  ═══════════════════════════ */
+  let rafId         = null;
+  let spinStart     = 0;
+  let spinDuration  = 4000;
+  let spinFrom      = 0;
+  let spinTo        = 0;
+  let winnerId      = 0;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+
+  function getSelected(angle) {
+    const N   = remaining.length;
+    const seg = (2 * Math.PI) / N;
+    const pw  = (((-Math.PI / 2 - angle) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const off = ((pw + Math.PI / 2) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+    return Math.floor(off / seg) % N;
+  }
+
+  function spinWheel() {
+    if (spinning || remaining.length === 0) return;
+    spinning = true;
+    document.getElementById('spinBtn').disabled = true;
+
+    const N   = remaining.length;
+    const seg = (2 * Math.PI) / N;
+
+    /* Random target segment */
+    const target     = Math.floor(Math.random() * N);
+    const jitter     = (Math.random() - 0.5) * seg * 0.55;
+    const baseAngle  = -(target * seg + seg / 2) + jitter;
+    const fullSpins  = (6 + Math.floor(Math.random() * 4)) * 2 * Math.PI;
+
+    const normBase   = ((baseAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const normCur    = ((currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const delta      = ((normBase - normCur) + 2 * Math.PI) % (2 * Math.PI);
+
+    spinFrom     = currentAngle;
+    spinTo       = currentAngle + fullSpins + delta;
+    spinDuration = 3800 + Math.random() * 1600;
+    spinStart    = performance.now();
+
+    function tick(now) {
+      const elapsed = now - spinStart;
+      const t       = Math.min(elapsed / spinDuration, 1);
+      currentAngle  = spinFrom + (spinTo - spinFrom) * easeOut(t);
+
+      const hi = t > 0.85 ? getSelected(currentAngle) : -1;
+      drawWheel(hi);
+
+      if (t < 1) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        currentAngle = spinTo;
+        winnerId     = getSelected(currentAngle);
+        drawWheel(winnerId);
+        spinning = false;
+        setTimeout(showResult, 350);
+      }
+    }
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* ═══════════════════════════
+     RESULT
+  ═══════════════════════════ */
+  function showResult() {
+    const winner = remaining[winnerId];
+    const team   = PREDEFINED[winner] || randomTeams.pop();
+
+    assignments[winner] = team;
+    remaining.splice(winnerId, 1);
+    assignedCount++;
+
+    /* Modal content */
+    document.getElementById('modalName').textContent = winner;
+    document.getElementById('modalTeam').textContent = team;
+    document.getElementById('modalFlag').textContent = TEAM_FLAGS[team] || '🏳️';
+    document.getElementById('modalTeam').style.color  = TEAM_COLORS[team] || 'var(--text)';
+    document.getElementById('modalCard').style.borderColor = TEAM_COLORS[team] || 'var(--gold)';
+    document.getElementById('modalConfetti').textContent =
+      team === 'COLOMBIA' ? '🎉 ¡VAMOS COLOMBIA! 🎉' : '';
+
+    document.getElementById('modalOverlay').classList.add('active');
+
+    updateScoreboard();
+    document.getElementById('counter').textContent = remaining.length;
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.getElementById('modalCard').style.borderColor = 'var(--gold)';
+    document.getElementById('modalTeam').style.color = 'var(--text)';
+
+    if (remaining.length === 0) {
+      document.getElementById('spinBtn').style.display = 'none';
+      const ca = document.getElementById('completedArea');
+      ca.style.display = 'flex';
+      drawEmpty();
+    } else {
+      document.getElementById('spinBtn').disabled = false;
+      drawWheel();
+    }
+  }
+
+  /* ═══════════════════════════
+     SCOREBOARD
+  ═══════════════════════════ */
+  function buildScoreboard() {
+    const list = document.getElementById('scoreboardList');
+    list.innerHTML = '';
+    ALL_PARTICIPANTS.forEach((name, i) => {
+      const li = document.createElement('li');
+      li.className = 'scoreboard-item';
+      li.id = 'sb_' + i;
+
+      li.innerHTML = `
+        <span class="sb-num">${i + 1}</span>
+        <span class="sb-name" title="${name}">${shortName(name)}</span>
+        <span class="sb-team" id="sbt_${i}"><span class="sb-pending"></span></span>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  function updateScoreboard() {
+    ALL_PARTICIPANTS.forEach((name, i) => {
+      if (assignments[name]) {
+        const li  = document.getElementById('sb_' + i);
+        const sbt = document.getElementById('sbt_' + i);
+        if (li) li.classList.add('assigned');
+        if (sbt) sbt.innerHTML =
+          `<span style="font-size:1rem">${TEAM_FLAGS[assignments[name]] || ''}</span>`+
+          `<span>${assignments[name]}</span>`;
+
+        document.getElementById('sbCount').textContent =
+          `${assignedCount} / 10`;
+      }
+    });
+  }
+
+  /* ═══════════════════════════
+     INIT
+  ═══════════════════════════ */
+  buildScoreboard();
+  drawWheel();
+</script>
 </body>
 </html>
